@@ -1,0 +1,8 @@
+<div class="container mt-5">
+    <h2>Are you sure you want to delete "{{ material.title }}"?</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'video_materials' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

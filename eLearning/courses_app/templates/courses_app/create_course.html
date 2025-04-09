@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'courses_app/layout.html' %}
+
+
+{% block navbar %}
+{% include "instructors_app/includes/instructor_navbar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Start -->
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow p-4">
+                <h2 class="text-center mb-4">Add Courses</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-grid mt-3">
+                        <button type="submit" class="btn btn-primary btn-block">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End -->
+
+{% endblock %}

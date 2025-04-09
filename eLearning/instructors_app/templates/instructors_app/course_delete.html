@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'courses_app/layout.html' %}
+
+{% block navbar %}
+{% include "instructors_app/includes/instructor_navbar.html" %}
+{% endblock %}
+{% block content %}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card p-4 shadow" style="width: 800px; height: 200px;">
+        <h2 class="text-center mb-4">Are you sure you want to delete "{{ course.title }}"?</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="{% url 'instructors_dashboard' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

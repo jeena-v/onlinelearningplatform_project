@@ -1,0 +1,14 @@
+<h2>My Enrolled Courses</h2>
+
+{% if enrolled_courses %}
+    <ul>
+        {% for enrollment in enrolled_courses %}
+            <li>
+                <a href="{% url 'course_details' enrollment.course.id %}">{{ enrollment.course.title }}</a>
+                (Enrolled on: {{ enrollment.enrolled_at|date:"Y-m-d" }})
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not enrolled in any courses yet.</p>
+{% endif %}

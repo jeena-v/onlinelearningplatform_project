@@ -1,0 +1,13 @@
+<h2>{{ category|title }} Study Materials</h2>
+<ul>
+    {% for material in materials %}
+        <li>
+            <a href="{{ material.file.url }}">{{ material.title }}</a>
+            <a href="{% url 'edit_study_material' material.pk %}">Edit</a>
+            <a href="{% url 'delete_study_material' material.pk %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No {{ category }} available.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'instructors_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>

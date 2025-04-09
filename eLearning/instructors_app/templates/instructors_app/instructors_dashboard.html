@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'courses_app/layout.html' %}
+
+{% block navbar %}
+{% include "instructors_app/includes/instructor_navbar.html" %}
+{% endblock %}
+{% block content %}
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="service-item text-center pt-3">
+                        <div class="p-4">
+                            
+                            <i class="fa fa-3x fa-video text-primary mb-4"></i>                            
+                            <a href="{% url 'video_materials' %}"><h5 class="mb-3">Video</h5></a>
+                            <a href="{% url 'video_materials' %}" class="btn btn-success btn-sm">Add/View</a>
+                           
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="service-item text-center pt-3">
+                        <div class="p-4">
+                            
+                            <i class="fa fa-3x fa-file-pdf text-primary mb-4"></i>
+                            <a href="{% url 'pdf_materials' %}"><h5 class="mb-3">Pdf</h5></a>
+                            <a href="" class="btn btn-success btn-sm">Add</a>
+                           
+                            
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item text-center pt-3">
+                        <div class="p-4">
+                            <i class="fa fa-3x fa-file-alt text-primary mb-4"></i>
+                            <a href=""><h5 class="mb-3">Assignments</h5></a>
+                            <a href="" class="btn btn-success btn-sm">Add</a>
+                            
+                            
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <div class="service-item text-center pt-3">
+                        <div class="p-4">
+                            <i class="fa fa-3x fa-question-circle text-primary mb-4"></i>
+                            <h5 class="mb-3">Quiz</h5>
+                            <a href="#" class="btn btn-success btn-sm">Add</a>
+                            
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Service End -->
+
+
+
+    <!-- About Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5">
+                <!-- Course Management -->
+                <div class="card my-3">
+                    <div class="card-header">Manage Courses</div>
+                    <div class="card-body">
+                        <a href="{% url 'create_course' %}" class="btn btn-primary">Create New Course</a>
+    
+                        <table class="table mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Course Name</th>
+                                    <th>Students Enrolled</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in course_data %}
+                                <tr>
+                                    <td>{{ data.course.title }}</td>
+                                    <td>{{ data.student_count }}</td> <!-- Displaying student count -->
+                                    <td>
+                                        <a href="{% url 'upload_material' data.course.id %}" class="btn btn-success btn-sm">Add Study Material</a>
+                                        <a href="{% url 'update_course' pk=data.course.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                        <a href="{% url 'delete_course' pk=data.course.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                                        <a href="{% url 'view_materials' data.course.id %}" class="btn btn-info btn-sm">View Materials</a>  <!-- New Button -->
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3">No courses available.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    
+
+        <!-- Assignments Management -->
+        <div class="card my-3">
+            <div class="card-header">Submitted Assignments</div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Course</th>
+                            <th>Assignment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>Python for Beginners</td>
+                            <td>Assignment 1</td>
+                            <td>
+                                <a href="#" class="btn btn-success btn-sm">Evaluate</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  
+    <!-- About End -->       
+
+    {% endblock %}
+
+</html>

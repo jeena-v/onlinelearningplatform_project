@@ -1,0 +1,21 @@
+<h2>{{ course.title }}</h2>
+<p>{{ course.description }}</p>
+
+<h3>Study Materials</h3>
+<ul>
+    {% for material in materials %}
+        <li>
+            <a href="{{ material.file.url }}" download>{{ material.title }}</a>
+        </li>
+    {% empty %}
+        <li>No study materials available.</li>
+    {% endfor %}
+</ul>
+{% if user.is_authenticated and user.user_type == 'student' %}
+    <form action="{% url 'enroll_in_course' course.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">Enroll Now</button>
+    </form>
+    {% else %}
+    <p><a href="{% url 'login' %}">Login</a> to enroll.</p>
+{% endif %}

@@ -1,0 +1,14 @@
+<h2>Available Courses</h2>
+<ul>
+    {% for course in courses %}
+        <li>{{ course.title }} - {{ course.instructor.username }}</li>
+        
+    {% endfor %}
+</ul>
+
+{% if user.is_authenticated and user.user_type == 'instructor' %}
+    <a href="{% url 'create_course' %}">Create New Course</a>
+{% endif %}
+{% if user.is_authenticated and user.user_type == "student" %}
+    <a href="{% url 'enrolled_courses' %}">My Courses</a>
+{% endif %}

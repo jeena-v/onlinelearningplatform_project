@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'courses_app/layout.html' %}
+{% block content %}
+
+    <!-- Start -->
+    <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">                                        
+                    <h1 class="mb-4">Let's Start</h1>
+                    <p class="mb-4"></p>
+                    
+                    <!-- Login Button -->
+                    <a class="btn btn-primary rounded-pill py-3 px-5" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Log in
+                    </a>
+                    
+                    
+                    <a href="{% url 'students_register' %}" class="btn btn-primary rounded-pill py-3 px-5">Register</a><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End -->
+    
+    <!-- Login Modal (Positioned on the Right Side) -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-end"> <!-- Custom class for right positioning -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Log in</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        
+                        <div class="mb-3">
+                              <div class="text-end mt-1">
+                                
+                                <a href="{% url 'forgot_password' %}" class="text-primary">Forgot Password?</a>
+
+                            </div>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember Me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        
+                    </form>
+                    {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Custom CSS to position modal on the right -->
+    <style>
+        .modal-dialog-end {
+            position: fixed;
+            top: 10%;
+            right: 10%;
+            transform: translateY(-50%);
+            width: 350px;
+            max-width: 90%;
+        }
+    </style>
+    
+
+{% endblock %}
+</html>

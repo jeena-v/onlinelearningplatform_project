@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'courses_app/layout.html' %}
+
+{% block navbar %}
+{% include "instructors_app/includes/instructor_navbar.html" %}
+{% endblock %}
+{% block content %}
+<h2>Video Materials</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course Name</th>
+            <th>Video</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for video in videos %}
+        <tr>
+            <td>{{ video.course.title }}</td>  <!-- Display course name -->
+            <td>{{ video.title }}</td>
+            <td>
+                <a href="{% url 'video_edit' video.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'video_delete' video.id %}" class="btn btn-danger btn-sm">Delete</a>
+                <a href="{{ video.file.url }}" class="btn btn-primary btn-sm" target="_blank">View video</a>
+
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No videos found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock %}

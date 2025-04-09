@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'courses_app/layout.html' %}
+
+{% block navbar %}
+{% include "instructors_app/includes/instructor_navbar.html" %}
+{% endblock %}
+{% block content %}
+<h1>Delete Video</h1>
+<p>Are you sure you want to delete "{{ video.name }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Delete</button>
+</form>
+{% endblock %}

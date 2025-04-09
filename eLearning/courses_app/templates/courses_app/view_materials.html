@@ -1,0 +1,38 @@
+{% extends 'courses_app/layout.html' %}
+{% block navbar %}
+{% include "instructors_app/includes/instructor_navbar.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Study Materials for {{ course.title }}</h2>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>File</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for material in materials %}
+            <tr>
+                <td>{{ material.title }}</td>
+                <td><a href="{{ material.file.url }}" target="_blank">View File</a></td>
+                <td>
+                    <a href="{% url 'edit_material' material.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'delete_material' material.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No materials available for this course.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'upload_material' course.id %}" class="btn btn-primary">Add New Material</a>
+</div>
+{% endblock %}
