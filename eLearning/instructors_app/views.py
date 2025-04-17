@@ -1,19 +1,21 @@
 from pyexpat.errors import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from courses_app.models import Course, StudyMaterial, Enrollment
+from courses_app.models import Course, Quiz, StudyMaterial, Enrollment
 
 
 @login_required
 def instructors_dashboard(request):
     courses = Course.objects.filter(instructor=request.user)
     # For each course, count the number of students enrolled
+    quizzes = Quiz.objects.filter(instructor=request.user) 
     course_data = []
     for course in courses:
         student_count = Enrollment.objects.filter(course=course).count()
         course_data.append({
             'course': course,
-            'student_count': student_count
+            'student_count': student_count,
+            'quizzes': quizzes
         })
 
     return render(request, 'instructors_app/instructors_dashboard.html', {
@@ -43,6 +45,7 @@ def view_materials(request, course_id):
     materials = StudyMaterial.objects.filter(course=course)
     return render(request, 'courses_app/view_materials.html', {'course': course, 'materials': materials})
 
+@login_required
 def video_materials(request):
     video_extensions = [".mp4", ".avi", ".mov", ".mkv"]
     
@@ -57,6 +60,7 @@ def video_materials(request):
 
     return render(request, "instructors_app/video_list.html", {"videos": videos})
 
+@login_required
 def pdf_materials(request):
     instructor_courses = Course.objects.filter(instructor=request.user)  # Get instructor's courses
     pdfs = StudyMaterial.objects.filter(course__in=instructor_courses, file__iendswith=".pdf")
@@ -67,6 +71,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from courses_app.models import StudyMaterial  # Ensure this model is correct
 from courses_app.forms import StudyMaterialForm  # You need a form to edit the video
 
+@login_required
 def video_edit(request, video_id):
     video = get_object_or_404(StudyMaterial, id=video_id)
     
@@ -80,6 +85,7 @@ def video_edit(request, video_id):
 
     return render(request, "instructors_app/video_edit.html", {"form": form})
 
+@login_required
 def video_delete(request, video_id):
     video = get_object_or_404(StudyMaterial, id=video_id)
     
@@ -89,6 +95,7 @@ def video_delete(request, video_id):
         return redirect('video_materials', course_id=course_id)
     return render(request, 'instructors_app/video_delete.html', {'video': video})
 
+@login_required
 def pdf_delete(request, pdf_id):
     pdf = get_object_or_404(StudyMaterial, id=pdf_id)
     
@@ -99,12 +106,19 @@ def pdf_delete(request, pdf_id):
     
     return render(request, 'instructors_app/pdf_delete.html', {'pdf': pdf})
 
+from django.db.models import Avg
+from courses_app.models import Feedback
 
 def course_details(request, course_id):
     course = get_object_or_404(Course, id=course_id)
+    feedbacks = Feedback.objects.filter(course=course)
+    average_rating = feedbacks.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
 
     return render(request, "instructors_app/course_details.html", {
         "course": course,
+        "feedbacks": feedbacks,
+        "average_rating": average_rating,
     })
+
 
 

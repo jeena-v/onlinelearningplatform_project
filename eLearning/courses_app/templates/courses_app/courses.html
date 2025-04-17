@@ -2,57 +2,66 @@
 <html lang="en">
 
 {% extends 'courses_app/layout.html' %}
+
 {% block content %}
-
-    <!-- Courses Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Courses</h6>
-                <h1 class="mb-5">Popular Courses</h1>
+<!-- Courses Start -->
+<div class="container-xxl py-5">
+    <form method="GET">
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 mb-3">
+                <input type="text" name="q" class="form-control" placeholder="Search by title or description..." value="{{ request.GET.q }}">
             </div>
-            <div class="row g-4 justify-content-center">
-                {% for course in courses %}
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    
-                    <div class="course-item bg-light">
-                        <div class="position-relative overflow-hidden">
-                            
-
-                            {% if course.image %}
-                            <img class="img-fluid" src="{{ course.image.url }}" alt="{{ course.title }}" style="height: 250px; width: 100%; object-fit: cover;">
-                            {% else %}
-                            <img class="img-fluid" src="../static/img/course-1.jpg" alt="">
-                            {% endif %}
-                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="{% url 'course_details' course.id %}" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
-                                <a href="{% url 'students_register' %}" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4 pb-0">
-                            <h3 class="mb-0">{{ course.price }}</h3>
-                           
-                            <h5 class="mb-4">{{course.title}}</h5>
-                        </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>{{ course.instructor.username }}</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>{{ course.duration }}</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>30 Students</small>
-                        </div>
-                    </div>
-                    
-                </div>
-                {% endfor %}
-               
+            <div class="col-lg-4 col-md-6 mb-3">
+                <input type="text" name="instructor" class="form-control" placeholder="Instructor name..." value="{{ request.GET.instructor }}">
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
             </div>
         </div>
+    </form>
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Courses</h6>
+            <h1 class="mb-5">Popular Courses</h1>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% for item in course_data %}
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="course-item bg-light">
+                    <div class="position-relative overflow-hidden">
+                        {% if item.course.image %}
+                        <img class="img-fluid" src="{{ item.course.image.url }}" alt="{{ item.course.title }}" style="height: 250px; width: 100%; object-fit: cover;">
+                        {% else %}
+                        <img class="img-fluid" src="../static/img/course-1.jpg" alt="">
+                        {% endif %}
+                        <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
+                            <a href="{% url 'course_details' item.course.id %}" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
+                            <a href="{% url 'students_register' %}" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
+                        </div>
+                    </div>
+                    <div class="text-center p-4 pb-0">
+                        <h3 class="mb-0">{{ item.course.price }}</h3>
+                        <h5 class="mb-4">{{ item.course.title }}</h5>
+                        <p>Rating: {{ item.average_rating }}</p>                                                                        
+                    </div>
+                    <div class="d-flex border-top">
+                        <small class="flex-fill text-center border-end py-2">
+                            <i class="fa fa-user-tie text-primary me-2"></i>
+                            <a href="{% url 'instructor_detail' instructor_id=item.course.instructor.id %}">
+                                {{ item.course.instructor.get_full_name|default:item.course.instructor.username }}
+                            </a>
+                        </small>
+                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>{{ item.course.duration }}</small>
+                        <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>{{ item.student_count }} Students</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    <!-- Courses End -->
+</div>
+<!-- Courses End -->
 
-
-    
-        
-    {% endblock %}
-    
+{% endblock %}
 
 </html>

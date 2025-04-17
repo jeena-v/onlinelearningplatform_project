@@ -1,0 +1,15 @@
+{% extends 'courses_app/layout.html' %}
+{% block navbar %}
+{% include "instructors_app/includes/instructor_navbar.html" %}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>Add Questions to Quiz: {{ quiz.title }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Add Question</button>
+    </form>
+    <a href="{% url 'quiz_list' %}" class="btn btn-primary">Back to Quiz List</a>
+</div>
+{% endblock %}

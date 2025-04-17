@@ -46,13 +46,47 @@
                     <img class="img-fluid" src="{{ course.image.url }}" alt="{{ course.title }}" style="object-fit: cover;">
                     {% else %}
                     <img class="img-fluid" src="../static/img/course-1.jpg" alt="">
-                    {% endif %}                    
+                    {% endif %}   
+                    
+                    
+                    <h5 class="mt-4">Student Reviews</h5>
+                    {% for fb in feedbacks %}
+                        <div class="border rounded p-2 my-2">
+                            <strong>{{ fb.user.username }}</strong>
+                            <div>
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= fb.rating %}
+                                        <small class="fa fa-star text-warning"></small>
+                                    {% else %}
+                                        <small class="fa fa-star text-secondary"></small>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p>{{ fb.comment }}</p>
+                            <small class="text-muted">{{ fb.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    {% empty %}
+                        <p>No feedback yet.</p>
+                    {% endfor %}
+                    
+                                     
                 </div>
+                
             </div>
             <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
                 <h6 class="section-title bg-white text-start text-primary pe-3"></h6>
                 <h1 class="mb-4"></h1>
                 <h1>{{ course.title }}</h1>
+                <div class="mb-3">
+                    {% for i in "12345"|make_list %}
+                        {% if forloop.counter <= average_rating %}
+                            <small class="fa fa-star text-warning"></small>
+                        {% else %}
+                            <small class="fa fa-star text-secondary"></small>
+                        {% endif %}
+                    {% endfor %}
+                    <small>({{ average_rating|floatformat:1 }})</small>
+                </div>
                 <p>{{ course.description }}</p>
                 <p>Instructor: {{ course.instructor.username }}</p>  
                 <p>Duration: {{ course.duration }}</p> 
@@ -78,6 +112,7 @@
                     </div>
                 </div>
                 
+                
                 {% if user.is_authenticated and user.user_type == 'student' %}
                     <form action="{% url 'enroll_in_course' course.id %}" method="POST">
                         {% csrf_token %}
@@ -86,8 +121,8 @@
                 {% else %}
                     <p><a class="btn btn-primary py-3 px-5 mt-2" href="{% url 'login' %}">Login to enroll</a> </p>
                 {% endif %}
-
-
+                
+                
             </div>
         </div>
     </div>

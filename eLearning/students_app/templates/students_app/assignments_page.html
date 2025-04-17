@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'courses_app/layout.html' %}
+
+{% block navbar %}
+<div class="navbar-nav ms-auto p-4 p-lg-0">
+    <a href="{% url 'my_course' course.id %}" class="nav-item nav-link active">My Course</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+        <h6 class="section-title bg-white text-center text-primary px-3">Assignments</h6>
+        <h1 class="mb-5">Assignments for {{ course.title }}</h1>  
+    </div>
+
+    <div class="container d-flex" style="height: 100vh;">
+        <!-- Assignments Section -->
+        <div class="right-panel p-3" style="width: 100%; overflow-y: auto;">
+            <div class="mt-5">
+                <h4>Assignments</h4>
+                <ul class="list-group">
+                    {% for assignment in assignments %}
+                        <li class="list-group-item">
+                            <h5>{{ assignment.title }}</h5>
+                            <p>{{ assignment.description }}</p>
+                            <p><strong>Due Date:</strong> {{ assignment.due_date }}</p>
+                
+                            {% if assignment.id in submitted_assignment_ids %}
+                                <button class="btn btn-success" disabled>Assignment Submitted</button>
+                            {% else %}
+                                <a href="{% url 'submit_assignment' assignment.id %}" class="btn btn-primary">Submit Assignment</a>
+                            {% endif %}
+                
+                            <div class="mt-4">
+                                <h5>My Submissions</h5>
+                                <ul class="list-group">
+                                    {% for submission in submissions %}
+                                        {% if submission.assignment.id == assignment.id and submission.student.id == user.id %}
+                                            <li class="list-group-item">
+                                                <p><strong>Submitted File:</strong> <a href="{{ submission.submitted_file.url }}" target="_blank">View File</a></p>
+                                                <p><strong>Submitted At:</strong> {{ submission.submitted_at }}</p>
+                                                <p><strong>Feedback:</strong> {{ submission.feedback|default:"No feedback yet." }}</p>
+                                                <p><strong>Grade:</strong> {{ submission.grade|default:"Not graded yet." }}</p>
+                                            </li>
+                                        {% endif %}
+                                    {% empty %}
+                                        <p>You haven't submitted any assignments yet.</p>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <p>No assignments available.</p>
+                    {% endfor %}
+                </ul>
+                
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+</html>

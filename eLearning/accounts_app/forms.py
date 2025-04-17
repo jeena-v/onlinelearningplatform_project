@@ -40,30 +40,12 @@ class LoginForm(forms.Form):
         label="Password",
     )
 
+# accounts_app/forms.py
+
+from django import forms
+
+class CustomPasswordResetForm(forms.Form):
+    email = forms.EmailField(label='Enter your registered email')
 
 
 
-User = get_user_model()
-
-class ForgotPasswordForm(forms.Form):
-    username_or_email = forms.CharField(max_length=255, label="Username or Email")
-
-    def clean_username_or_email(self):
-        data = self.cleaned_data['username_or_email']
-        if not User.objects.filter(username=data).exists() and not User.objects.filter(email=data).exists():
-            raise forms.ValidationError("User not found.")
-        return data
-
-class ResetPasswordForm(forms.Form):
-    new_password = forms.CharField(widget=forms.PasswordInput)
-    confirm_password = forms.CharField(widget=forms.PasswordInput)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        new_password = cleaned_data.get('new_password')
-        confirm_password = cleaned_data.get('confirm_password')
-
-        if new_password != confirm_password:
-            raise forms.ValidationError("Passwords do not match.")
-
-        return cleaned_data

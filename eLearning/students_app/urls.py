@@ -6,6 +6,8 @@ urlpatterns = [
        path('my_course/<int:course_id>',views.my_course,name='my_course'),
        path('profile/',views.profile_view,name='profile'),
        path('profile/edit/', views.edit_profile, name='edit_profile'),
+       path('students/my_course/<int:course_id>/assignments/', views.assignments_page, name='assignments_page'),
+
 
 
 

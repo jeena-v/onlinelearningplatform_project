@@ -18,7 +18,7 @@
                             
                             <i class="fa fa-3x fa-video text-primary mb-4"></i>                            
                             <a href="{% url 'video_materials' %}"><h5 class="mb-3">Video</h5></a>
-                            <a href="{% url 'video_materials' %}" class="btn btn-success btn-sm">Add/View</a>
+                            <a href="{% url 'video_materials' %}" class="btn btn-success btn-sm">View</a>
                            
                             <p></p>
                         </div>
@@ -30,7 +30,7 @@
                             
                             <i class="fa fa-3x fa-file-pdf text-primary mb-4"></i>
                             <a href="{% url 'pdf_materials' %}"><h5 class="mb-3">Pdf</h5></a>
-                            <a href="" class="btn btn-success btn-sm">Add</a>
+                            <a href="{% url 'pdf_materials' %}" class="btn btn-success btn-sm">View</a>
                            
                             
                             <p></p>
@@ -41,10 +41,8 @@
                     <div class="service-item text-center pt-3">
                         <div class="p-4">
                             <i class="fa fa-3x fa-file-alt text-primary mb-4"></i>
-                            <a href=""><h5 class="mb-3">Assignments</h5></a>
-                            <a href="" class="btn btn-success btn-sm">Add</a>
-                            
-                            
+                            <a href="{% url 'assignment_list' %}"><h5 class="mb-3">Assignments</h5></a>
+                            <a href="{% url 'add_assignment' %}" class="btn btn-success btn-sm">Add</a>                                                       
                             <p></p>
                         </div>
                     </div>
@@ -53,8 +51,8 @@
                     <div class="service-item text-center pt-3">
                         <div class="p-4">
                             <i class="fa fa-3x fa-question-circle text-primary mb-4"></i>
-                            <h5 class="mb-3">Quiz</h5>
-                            <a href="#" class="btn btn-success btn-sm">Add</a>
+                            <a href="{% url 'quiz_list' %}"><h5 class="mb-3">Quizzes</h5></a>
+                            <a href="{% url 'create_quiz' %}" class="btn btn-success btn-sm">Add</a>
                             
                             <p></p>
                         </div>
@@ -109,37 +107,6 @@
             </div>
         </div>
     
-    
-
-        <!-- Assignments Management -->
-        <div class="card my-3">
-            <div class="card-header">Submitted Assignments</div>
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Course</th>
-                            <th>Assignment</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Jane Smith</td>
-                            <td>Python for Beginners</td>
-                            <td>Assignment 1</td>
-                            <td>
-                                <a href="#" class="btn btn-success btn-sm">Evaluate</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-  
-    <!-- About End -->       
 
     {% endblock %}
 

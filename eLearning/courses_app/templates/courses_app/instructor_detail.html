@@ -1,0 +1,30 @@
+
+{% extends 'courses_app/layout.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="text-center">
+                {% if instructor.profile_picture %}
+                    <img src="{{ instructor.get_profile_picture_url }}" class="img-fluid" alt="{{ instructor.username }}">
+                {% else %}
+                    <img src="../static/img/course-1.jpg" class="img-fluid" alt="{{ instructor.username }}">
+                {% endif %}
+                <h3>{{ instructor.username }}</h3>
+                <p>{{ instructor.bio }}</p>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h4>Courses Taught</h4>
+            <ul>
+                {% for course in courses %}
+                    <li><a href="{% url 'course_details' course.id %}">{{ course.title }}</a></li>
+                {% empty %}
+                    <li>No courses available.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

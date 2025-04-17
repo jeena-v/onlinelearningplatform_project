@@ -1,0 +1,36 @@
+{% extends 'courses_app/layout.html' %}
+
+{% block navbar %}
+<div class="navbar-nav ms-auto p-4 p-lg-0">
+    <a href="{% url 'students_dashboard' %}" class="nav-item nav-link active">Home</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<h3>{{ quiz.title }}</h3>
+<p>{{ quiz.description }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    {% for question in questions %}
+        <div>
+            <p>{{ question.text }}</p>
+            <label>
+                <input type="radio" name="question_{{ question.id }}" value="A"> {{ question.option_a }}
+            </label><br>
+            <label>
+                <input type="radio" name="question_{{ question.id }}" value="B"> {{ question.option_b }}
+            </label><br>
+            <label>
+                <input type="radio" name="question_{{ question.id }}" value="C"> {{ question.option_c }}
+            </label><br>
+            <label>
+                <input type="radio" name="question_{{ question.id }}" value="D"> {{ question.option_d }}
+            </label><br><br>
+        </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-success">Submit Quiz</button>
+</form>
+   
+{% endblock %}

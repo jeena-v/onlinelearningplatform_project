@@ -45,31 +45,77 @@
 
                         </li>
                     {% endfor %}
-                </ul>
-                
-                
+                </ul>                                
             </div>
-        </div>
-    </div>
-    
-        
-        <!-- Assignments Section -->
-        <div class="mt-4">
-            <h4>Assignments</h4>
-            <ul class="list-group">
-                {% for assignment in assignments %}
-                    <li class="list-group-item">
-                        <h5>{{ assignment.title }}</h5>
-                        <p>{{ assignment.description }}</p>
-                        <p><strong>Due Date:</strong> {{ assignment.due_date }}</p>
-                    </li>
-                {% empty %}
-                    <p>No assignments available.</p>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
+            
+            <div class="mt-4 d-flex gap-2">
+                <a href="{% url 'assignments_page' course.id %}" class="btn btn-info btn-sm">View Assignments</a>
+                <button id="show-quiz-list" class="btn btn-info btn-sm">View Quizzes</button>
+            </div>
+            
+
+
+<div id="quiz-list" class="mt-2" style="display: none;">
+    <h3>Quizzes</h3>
+    <ul>
+        {% for quiz in quizzes %}
+            <li>
+                {{ quiz.title }}
+                <a href="{% url 'student_quiz' quiz.id %}" class="btn btn-primary btn-sm">Attempt</a>
+            </li>
+        {% empty %}
+            <li>No quizzes available.</li>
+        {% endfor %}
+    </ul>
 </div>
+
+
+        </div>
+    </div>
+    <hr>
+    <h4>Course Feedback</h4>
+    
+    <!-- Show average rating -->
+    <p>
+      Average Rating:
+      {% for i in "12345"|make_list %}
+        {% if forloop.counter <= average_rating|default:0 %}
+          <i class="fa fa-star text-warning"></i>
+        {% else %}
+          <i class="fa fa-star text-secondary"></i>
+        {% endif %}
+      {% endfor %}
+      ({{ average_rating|floatformat:1 }} / 5)
+    </p>
+    
+    <!-- Feedback Form -->
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Submit Feedback</button>
+    </form>
+    
+    <!-- Display other feedback -->
+    <h5 class="mt-4">Student Reviews</h5>
+    {% for fb in feedbacks %}
+      <div class="border rounded p-2 my-2">
+        <strong>{{ fb.user.username }}</strong><br>
+        {% for i in "12345"|make_list %}
+          {% if forloop.counter <= fb.rating %}
+            <i class="fa fa-star text-warning"></i>
+          {% else %}
+            <i class="fa fa-star text-secondary"></i>
+          {% endif %}
+        {% endfor %}
+        <p>{{ fb.comment }}</p>
+        <small class="text-muted">{{ fb.created_at|date:"F j, Y" }}</small>
+      </div>
+    {% empty %}
+      <p>No feedback yet.</p>
+    {% endfor %}
+      
+    
+    
 
 <!-- JavaScript to Switch Content -->
 
@@ -101,12 +147,16 @@
     }
 }
 
-
-
+document.getElementById('show-quiz-list').addEventListener('click', function() {
+        var quizList = document.getElementById('quiz-list');
+        if (quizList.style.display === 'none') {
+            quizList.style.display = 'block';
+        } else {
+            quizList.style.display = 'none';
+        }
+    });
 
 </script>
-
-
 
 {% endblock %}
 </html>

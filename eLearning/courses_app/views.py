@@ -1,19 +1,85 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Course, StudyMaterial
-from .forms import CourseForm, StudyMaterialForm
+from django.db.models import Avg
+from accounts_app.models import CustomUser
+from .models import Assignment, Course, Feedback, StudyMaterial,Enrollment,ContactMessage,StudentSubmission
+from .forms import AssignmentForm, CourseForm, FeedbackForm, QuizForm, StudyMaterialForm, ContactForm, StudentSubmissionForm
+from django.db.models import Q
+from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.conf import settings
+
+
+def about(request):
+    return render(request,'courses_app/about.html')
+
+def contact(request):
+    return render(request,'courses_app/contact.html')
 
 def index(request):
+    if request.user.is_authenticated:
+        if request.user.user_type == 'student':
+            return redirect('students_dashboard')
+        elif request.user.user_type == 'instructor':
+            return redirect('instructors_dashboard')
+
     courses = Course.objects.all()
-    return render(request, 'courses_app/index.html', {'courses': courses})
+
+    for course in courses:
+        course.student_count = course.enrollment_set.count()
+        course.average_rating = course.feedbacks.aggregate(avg=Avg('rating'))['avg'] or 0
+
+    instructors = CustomUser.objects.filter(user_type='instructor')
+
+    return render(request, 'courses_app/index.html', {
+        'courses': courses,
+        'instructors': instructors
+    })
 
 
+def instructor_detail(request, instructor_id):
+    # Get the instructor by their ID (ensuring they are an instructor)
+    instructor = get_object_or_404(CustomUser, id=instructor_id, user_type='instructor')
+    
+    # Get all courses taught by this instructor
+    courses = Course.objects.filter(instructor=instructor)
+    
+    # Pass the instructor and their courses to the template
+    return render(request, 'courses_app/instructor_detail.html', {'instructor': instructor, 'courses': courses})
 
 def courses(request):
-    courses = Course.objects.all()
-    studymaterials = StudyMaterial.objects.all()
+    query = request.GET.get('q')
+    instructor = request.GET.get('instructor')
 
-    return render(request,'courses_app/courses.html',{'courses':courses,'studymaterials':studymaterials})
+    courses = Course.objects.all()
+
+    if query:
+        courses = courses.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query)
+        )
+
+    if instructor:
+        courses = courses.filter(
+            instructor__username__icontains=instructor
+        )
+
+    course_data = []
+    for course in courses:
+        student_count = Enrollment.objects.filter(course=course).count()
+        average_rating = course.feedbacks.aggregate(avg=Avg('rating'))['avg'] or 0
+
+        course_data.append({
+            'course': course,
+            'student_count': student_count,
+            'average_rating': average_rating  # ✅ add this line
+        })
+
+    return render(request, 'courses_app/courses.html', {
+        'course_data': course_data
+    })
+
 
 
 def course_list(request):
@@ -57,8 +123,6 @@ def delete_course(request, pk):
         return redirect('instructors_dashboard')
     return render(request, 'instructors_app/course_delete.html', {'course': course})
     
-
-
 @login_required
 def upload_material(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -78,19 +142,11 @@ def upload_material(request, course_id):
     
     return render(request, 'courses_app/upload_material.html', {'form': form, 'course': course})
 
-from django.shortcuts import render, get_object_or_404
-from .models import Course, StudyMaterial
-
 def course_detail(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     materials = StudyMaterial.objects.filter(course=course)
 
     return render(request, 'courses_app/course_detail.html', {'course': course, 'materials': materials})
-
-
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from .models import Course, Enrollment
 
 @login_required
 def enroll_in_course(request, course_id):
@@ -104,10 +160,6 @@ def enroll_in_course(request, course_id):
     Enrollment.objects.get_or_create(student=request.user, course=course)
 
     return redirect('students_dashboard')
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from .models import Enrollment
 
 @login_required
 def enrolled_courses(request):
@@ -147,3 +199,227 @@ def delete_material(request, material_id):
         return redirect('view_materials', course_id=course_id)
 
     return render(request, 'courses_app/delete_material.html', {'material': material})
+
+@login_required
+def add_assignment(request):
+    if request.method == "POST":
+        form = AssignmentForm(request.POST, user=request.user)  # 👈 pass user
+        if form.is_valid():
+            assignment = form.save(commit=False)
+            assignment.instructor = request.user
+            assignment.save()
+            return redirect('assignment_list')
+    else:
+        form = AssignmentForm(user=request.user)  # 👈 pass user
+    return render(request, "courses_app/assignment_form.html", {"form": form})
+
+@login_required
+def assignment_list(request):
+    assignments = Assignment.objects.filter(instructor=request.user)
+    return render(request, "courses_app/assignment_list.html", {"assignments": assignments})
+
+@login_required
+def edit_assignment(request, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+
+    if request.method == "POST":
+        form = AssignmentForm(request.POST, instance=assignment, user=request.user)  # 👈 pass user
+        if form.is_valid():
+            form.save()
+            return redirect('assignment_list')
+    else:
+        form = AssignmentForm(instance=assignment, user=request.user)  # 👈 pass user
+
+    return render(request, "courses_app/assignment_edit.html", {"form": form})
+
+@login_required
+def delete_assignment(request, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+    if request.method == "POST":
+        assignment.delete()
+        return redirect('assignment_list')
+    return render(request, "courses_app/assignment_delete.html", {"assignment": assignment})
+
+@login_required
+def submit_assignment(request, assignment_id):
+    assignment = Assignment.objects.get(id=assignment_id)
+
+    if request.method == 'POST':
+        form = StudentSubmissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            submission = form.save(commit=False)
+            submission.student = request.user
+            submission.assignment = assignment
+            submission.save()
+            return redirect('students_dashboard')  # Redirect after successful submission
+    else:
+        form = StudentSubmissionForm()
+
+    return render(request, 'students_app/submit_assignment.html', {'form': form, 'assignment': assignment})
+
+@login_required
+def view_submissions(request, assignment_id):
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    submissions = StudentSubmission.objects.filter(assignment=assignment)
+
+    # Optional: Check that there are submissions for the assignment
+    if not submissions:
+        submissions = None
+
+    return render(request, 'courses_app/view_submissions.html', {'assignment': assignment, 'submissions': submissions})
+
+@login_required
+def evaluate_submission(request, submission_id):
+    submission = StudentSubmission.objects.get(id=submission_id)
+
+    if request.method == 'POST':
+        feedback = request.POST.get('feedback')
+        grade = request.POST.get('grade')
+        submission.feedback = feedback
+        submission.grade = grade
+        submission.save()
+        return redirect('view_submissions', assignment_id=submission.assignment.id)
+
+    return render(request, 'courses_app/evaluate_submission.html', {'submission': submission})
+
+def contact_view(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Save to DB
+            contact = ContactMessage.objects.create(
+                name=form.cleaned_data['name'],
+                email=form.cleaned_data['email'],
+                subject=form.cleaned_data['subject'],
+                message=form.cleaned_data['message']
+            )
+
+            # Send Email
+            send_mail(
+                subject=f"New Contact Message: {contact.subject}",
+                message=f"Name: {contact.name}\nEmail: {contact.email}\n\nMessage:\n{contact.message}",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=['your_email@gmail.com'],  # where you want to receive messages
+                fail_silently=False,
+            )
+
+            messages.success(request, 'Your message has been sent and saved successfully!')
+            return redirect('contact')
+    else:
+        form = ContactForm()
+
+    return render(request, 'courses_app/contact.html', {'form': form})
+
+@login_required
+def submit_feedback(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    # Check if user is enrolled
+    if not Enrollment.objects.filter(user=request.user, course=course).exists():
+        return render(request, 'feedback/not_enrolled.html')
+
+    feedback_instance = Feedback.objects.filter(user=request.user, course=course).first()
+
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST, instance=feedback_instance)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.user = request.user
+            feedback.course = course
+            feedback.save()
+            return redirect('course_details', course_id=course.id)
+    else:
+        form = FeedbackForm(instance=feedback_instance)
+
+    return render(request, 'feedback/submit_feedback.html', {'form': form, 'course': course})
+
+@login_required
+def create_quiz(request):
+    if request.method == 'POST':
+        form = QuizForm(request.POST, user=request.user)
+        if form.is_valid():
+            quiz = form.save(commit=False)
+            quiz.instructor = request.user
+            quiz.save()
+            return redirect('add_question', quiz_id=quiz.id)
+    else:
+        form = QuizForm(user=request.user)
+
+    return render(request, 'courses_app/create_quiz.html', {'form': form})
+
+
+from .models import Quiz, Question
+from .forms import QuestionForm
+
+@login_required
+def add_question(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)  # Get the quiz object by quiz_id
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.quiz = quiz  # Associate the question with the selected quiz
+            question.save()
+            return redirect('add_question', quiz_id=quiz.id)  # Redirect back to add more questions
+    else:
+        form = QuestionForm()
+
+    return render(request, 'courses_app/add_question.html', {'form': form, 'quiz': quiz})
+
+@login_required
+def quiz_list(request):
+    quizzes = Quiz.objects.filter(instructor=request.user)
+    return render(request, 'courses_app/quiz_list.html', {'quizzes': quizzes})
+
+
+@login_required
+def student_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    questions = quiz.questions.all()
+
+    if request.method == 'POST':
+        score = 0
+        total = questions.count()
+
+        for question in questions:
+            selected = request.POST.get(f'question_{question.id}')
+            print(f"Q: {question.text} | Selected: {selected} | Correct: {question.correct_option}")
+
+            if selected and selected.upper() == question.correct_option.upper():
+                score += 1
+
+        percentage = round((score / total) * 100, 2)
+
+        # Redirect to result page with score data 
+        return render(request, 'courses_app/quiz_result.html', {
+            'quiz': quiz,
+            'score': score,
+            'total': total,
+            'percentage': percentage,
+        })
+
+    return render(request, 'courses_app/attempt_quiz.html', {
+        'quiz': quiz,
+        'questions': questions,
+    })
+
+@login_required
+def edit_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id, instructor=request.user)
+    if request.method == 'POST':
+        form = QuizForm(request.POST, instance=quiz)
+        if form.is_valid():
+            form.save()
+            return redirect('quiz_list')
+    else:
+        form = QuizForm(instance=quiz)
+    return render(request, 'courses_app/edit_quiz.html', {'form': form})
+
+
+@login_required
+def delete_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id, instructor=request.user)
+    if request.method == "POST":
+        quiz.delete()
+        return redirect('quiz_list')
+    return render(request, "courses_app/delete_quiz.html", {"quiz": quiz})

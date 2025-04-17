@@ -1,8 +1,9 @@
 <div class="navbar-nav ms-auto p-4 p-lg-0">
     <a href="{% url 'instructors_dashboard' %}" class="nav-item nav-link active">Home</a>         
     <a href="{% url 'instructor_student_list' %}" class="nav-item nav-link">Students</a>
-    <a href="" class="nav-item nav-link">Notes</a>      
-    <a href="" class="nav-item nav-link">Assignments</a>  
+    <a href="{% url 'assignment_list' %}" class="nav-item nav-link">Assignments</a> 
+    <a href="{% url 'quiz_list' %}" class="nav-item nav-link">Quizzes</a>      
+ 
    
 </div>
 <div class="dropdown">
@@ -13,7 +14,7 @@
     </a>
     <ul class="dropdown-menu dropdown-menu-end mt-4" aria-labelledby="profileDropdown">
         <li><a class="dropdown-item" href="{% url 'profile' %}">View Profile</a></li>
-        <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+        <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Edit Profile</a></li>
         <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
     </ul>
 </div>

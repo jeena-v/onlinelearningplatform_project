@@ -59,54 +59,51 @@ def user_login(request):
 
     return render(request, "accounts_app/login.html", {"form": form})
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from .forms import ForgotPasswordForm, ResetPasswordForm
+from django.contrib.auth.tokens import default_token_generator
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from .forms import CustomPasswordResetForm
+from django.conf import settings
 
-User = get_user_model()
+User = get_user_model()  # Uses your custom user model
 
-def forgot_password_view(request):
+def custom_password_reset_view(request):
     if request.method == 'POST':
-        form = ForgotPasswordForm(request.POST)
+        form = CustomPasswordResetForm(request.POST)
         if form.is_valid():
-            username_or_email = form.cleaned_data['username_or_email']
-            request.session['reset_user'] = username_or_email
-            return redirect('reset_password')
+            email = form.cleaned_data['email']
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return render(request, 'accounts_app/password_reset_form.html', {
+                    'form': form,
+                    'error': 'No user is associated with this email.'
+                })
+
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = request.build_absolute_uri(
+            f'/accounts/reset/{uid}/{token}/'
+            )
+
+
+            subject = 'Reset Your Password'
+            message = render_to_string('accounts_app/password_reset_email.html', {
+                'user': user,
+                'reset_link': reset_link
+            })
+
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+            return render(request, 'accounts_app/password_reset_done.html')
+
     else:
-        form = ForgotPasswordForm()
+        form = CustomPasswordResetForm()
 
-    return render(request, 'accounts_app/forgot_password.html', {'form': form})
-
-def reset_password_view(request):
-    username_or_email = request.session.get('reset_user')
-
-    if not username_or_email:
-        return redirect('forgot_password')
-
-    try:
-        user = User.objects.get(username=username_or_email)
-    except User.DoesNotExist:
-        try:
-            user = User.objects.get(email=username_or_email)
-        except User.DoesNotExist:
-            messages.error(request, "User not found.")
-            return redirect('forgot_password')
-
-    if request.method == 'POST':
-        form = ResetPasswordForm(request.POST)
-        if form.is_valid():
-            new_password = form.cleaned_data['new_password']
-            user.password = make_password(new_password)
-            user.save()
-            messages.success(request, "Password reset successfully! Please login.")
-            return redirect('login')
-    else:
-        form = ResetPasswordForm()
-
-    return render(request, 'accounts_app/reset_password.html', {'form': form})
-
+    return render(request, 'accounts_app/password_reset_form.html', {'form': form})
 
 def user_logout(request):
     logout(request)

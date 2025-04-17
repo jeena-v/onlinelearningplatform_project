@@ -1,0 +1,22 @@
+{% extends 'courses_app/layout.html' %}
+{% block navbar %}
+{% include "instructors_app/includes/instructor_navbar.html" %}
+{% endblock %}
+{% block content %}
+    <div class="container mt-5">
+        <h2>Your Quizzes</h2>
+        {% if quizzes %}
+            <div class="list-group">
+                {% for quiz in quizzes %}
+                    <div class="list-group-item">
+                        <h5>{{ quiz.title }}</h5>
+                        <p>{{ quiz.description }}</p>
+                        <a href="{% url 'add_question' quiz.id %}" class="btn btn-sm btn-outline-primary">Add Question</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No quizzes available. Create a quiz to get started!</p>
+        {% endif %}
+    </div>
+{% endblock %}
