@@ -53,7 +53,7 @@
                         <div class="p-4">
                             <i class="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
                             <h5 class="mb-3">Skilled Instructors</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                            <p>Learn from experienced and passionate professionals.</p>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                         <div class="p-4">
                             <i class="fa fa-3x fa-globe text-primary mb-4"></i>
                             <h5 class="mb-3">Online Classes</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                            <p>Flexible classes you can attend anytime, anywhere.</p>
                         </div>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                         <div class="p-4">
                             <i class="fa fa-3x fa-home text-primary mb-4"></i>
                             <h5 class="mb-3">Home Projects</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                            <p>Apply your skills with real-world projects at home.</p>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                         <div class="p-4">
                             <i class="fa fa-3x fa-book-open text-primary mb-4"></i>
                             <h5 class="mb-3">Book Library</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                            <p>Access a wide range of books and learning materials.</p>
                         </div>
                     </div>
                 </div>
@@ -131,11 +131,6 @@
         </div>
     </div>
     <!-- About End -->
-
-
- 
-
-
     <!-- Courses Start -->
     <div class="container-xxl py-5">
         <div class="container">
@@ -175,7 +170,7 @@
                         </div>
                         <div class="d-flex border-top">
                             <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>{{ course.instructor.username }}</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>{{ course.duration }}</small>
+                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar text-primary me-2"></i>{{ course.created_at|date:"M d, Y" }}</small>
                             <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>{{ course.student_count }} Students</small>
                         </div>
                     </div>

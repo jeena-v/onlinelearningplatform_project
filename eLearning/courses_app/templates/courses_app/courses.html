@@ -41,9 +41,21 @@
                     </div>
                     <div class="text-center p-4 pb-0">
                         <h3 class="mb-0">{{ item.course.price }}</h3>
+                        
+                        <div class="mb-2">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= item.average_rating %}
+                                    <small class="fa fa-star text-warning"></small>
+                                {% else %}
+                                    <small class="fa fa-star text-secondary"></small>
+                                {% endif %}
+                            {% endfor %}
+                            <small>({{ item.average_rating|floatformat:1 }})</small>
+                        </div>
+                    
                         <h5 class="mb-4">{{ item.course.title }}</h5>
-                        <p>Rating: {{ item.average_rating }}</p>                                                                        
                     </div>
+                    
                     <div class="d-flex border-top">
                         <small class="flex-fill text-center border-end py-2">
                             <i class="fa fa-user-tie text-primary me-2"></i>
@@ -51,7 +63,7 @@
                                 {{ item.course.instructor.get_full_name|default:item.course.instructor.username }}
                             </a>
                         </small>
-                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>{{ item.course.duration }}</small>
+                        <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar text-primary me-2"></i>{{ item.course.created_at|date:"M d, Y" }}</small>
                         <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>{{ item.student_count }} Students</small>
                     </div>
                 </div>

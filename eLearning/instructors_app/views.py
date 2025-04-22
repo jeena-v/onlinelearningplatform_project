@@ -22,7 +22,7 @@ def instructors_dashboard(request):
         'course_data': course_data
     })
         
-@login_required
+@login_required   #enrolled students details
 def instructor_student_list(request):
     # Get the instructor's courses
     courses = Course.objects.filter(instructor=request.user)
@@ -34,7 +34,7 @@ def instructor_student_list(request):
         'enrollments': enrollments,
     })
 
-@login_required
+@login_required      #view all studymaterials
 def view_materials(request, course_id):
     course = get_object_or_404(Course, id=course_id)
 
@@ -68,8 +68,8 @@ def pdf_materials(request):
     return render(request, "instructors_app/pdf_list.html", {"pdfs": pdfs})
 
 from django.shortcuts import render, get_object_or_404, redirect
-from courses_app.models import StudyMaterial  # Ensure this model is correct
-from courses_app.forms import StudyMaterialForm  # You need a form to edit the video
+from courses_app.models import StudyMaterial  
+from courses_app.forms import StudyMaterialForm  
 
 @login_required
 def video_edit(request, video_id):
@@ -108,7 +108,7 @@ def pdf_delete(request, pdf_id):
 
 from django.db.models import Avg
 from courses_app.models import Feedback
-
+#Details of all courses
 def course_details(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     feedbacks = Feedback.objects.filter(course=course)

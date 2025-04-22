@@ -1,19 +1,24 @@
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from courses_app.forms import FeedbackForm
-from django.db.models import Avg
+from django.db.models import Avg,Count
 from courses_app.models import Assignment, Course, Enrollment, StudentSubmission, StudyMaterial,Feedback 
-
 
 @login_required
 def students_dashboard(request):
     enrolled_courses = Enrollment.objects.filter(student=request.user)
 
-    courses = Course.objects.all()  # You can filter by enrollment later if needed
-    return render(request, 'students_app/students_dashboard.html', {'courses': courses,'enrolled_courses': enrolled_courses})
+    # Annotate each course with average rating and student count
+    courses = Course.objects.annotate(
+        avg_rating=Avg('feedbacks__rating'),
+        student_count=Count('enrollment')
+    )
 
-
-@login_required
+    return render(request, 'students_app/students_dashboard.html', {
+        'courses': courses,
+        'enrolled_courses': enrolled_courses
+    })
+@login_required   #enrolled students class and all study materials page
 def my_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     materials = StudyMaterial.objects.filter(course=course)

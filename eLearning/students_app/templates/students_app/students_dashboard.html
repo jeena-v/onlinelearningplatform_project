@@ -84,19 +84,22 @@
                         <div class="text-center p-4 pb-0">
                             <h3 class="mb-0">{{ course.price }}</h3>
                             <div class="mb-3">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small>(123)</small>
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= course.avg_rating|default:0 %}
+                                        <small class="fa fa-star text-warning"></small>
+                                    {% else %}
+                                        <small class="fa fa-star text-secondary"></small>
+                                    {% endif %}
+                                {% endfor %}
+                                <small>({{ course.avg_rating|floatformat:1|default:"0.0" }})</small>
                             </div>
+                            
                             <h5 class="mb-4">{{ course.title }}</h5>
                         </div>
                         <div class="d-flex border-top">
                             <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>{{ course.instructor.username }}</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>{{ course.duration }}</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>30 Students</small>
+                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar text-primary me-2"></i>{{ course.created_at|date:"M d, Y" }}</small>
+                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>{{ course.student_count }} Students</small>
                         </div>
                     </div>
                 </div>
