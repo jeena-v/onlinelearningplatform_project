@@ -1,4 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'courses_app/layout.html' %}
+
+{% block navbar %}
+<div class="navbar-nav ms-auto p-4 p-lg-0">
+    <a href="{% url 'students_dashboard' %}" class="nav-item nav-link active">Home</a>
+</div>
+{% endblock %}
 {% block content %}
   <h2>Leave Feedback for {{ course.title }}</h2>
   <form method="post">
@@ -7,3 +13,4 @@
     <button type="submit" class="btn btn-primary">Submit Feedback</button>
   </form>
 {% endblock %}
+[]

@@ -1,0 +1,14 @@
+{% extends 'courses_app/layout.html' %}
+
+{% block navbar %}
+<div class="navbar-nav ms-auto p-4 p-lg-0">
+    <a href="{% url 'students_dashboard' %}" class="nav-item nav-link active">Home</a>
+</div>
+{% endblock %}
+{% block content %}
+<div class="container mt-5 text-center">
+    <h2 class="text-danger">Access Denied</h2>
+    <p>You are not enrolled in this course, so you cannot submit feedback.</p>
+    <a href="{% url 'course_list' %}" class="btn btn-primary mt-3">Browse Courses</a>
+</div>
+{% endblock %}

@@ -322,7 +322,7 @@ def submit_feedback(request, course_id):
 
     # Check if user is enrolled
     if not Enrollment.objects.filter(user=request.user, course=course).exists():
-        return render(request, 'feedback/not_enrolled.html')
+        return render(request, 'courses_app/not_enrolled.html')
 
     feedback_instance = Feedback.objects.filter(user=request.user, course=course).first()
 
@@ -337,7 +337,7 @@ def submit_feedback(request, course_id):
     else:
         form = FeedbackForm(instance=feedback_instance)
 
-    return render(request, 'feedback/submit_feedback.html', {'form': form, 'course': course})
+    return render(request, 'courses_app/submit_feedback.html', {'form': form, 'course': course})
 #quiz creation
 @login_required
 def create_quiz(request):
