@@ -135,7 +135,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 
 
-# settings.py
+# contactmessage
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -144,3 +144,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'jeenav.valsan@gmail.com'         # your Gmail
 EMAIL_HOST_PASSWORD = 'yxguzmcgyntpxgky'       # app password (not your Gmail password)
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+#razorpay
+
+RAZORPAY_KEY_ID = "rzp_test_x8m2DtKaCnSlB0"
+RAZORPAY_KEY_SECRET = "N9Q2Ouy0xnVViRoYrlOdZ4DP"
+

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
 from accounts_app.models import CustomUser
-from .models import Assignment, Course, Feedback, StudyMaterial,Enrollment,ContactMessage,StudentSubmission
+from .models import Assignment, Course, Feedback, Payment, StudyMaterial,Enrollment,ContactMessage,StudentSubmission
 from .forms import AssignmentForm, CourseForm, FeedbackForm, QuizForm, StudyMaterialForm, ContactForm, StudentSubmissionForm
 from django.db.models import Q
 from django.http import HttpResponse
@@ -429,3 +429,73 @@ def delete_quiz(request, quiz_id):
         quiz.delete()
         return redirect('quiz_list')
     return render(request, "courses_app/delete_quiz.html", {"quiz": quiz})
+
+
+import razorpay
+
+
+@login_required
+def initiate_payment(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    if request.user.user_type == "instructor":
+        return HttpResponse("Instructors cannot enroll.", status=403)
+
+    if Enrollment.objects.filter(student=request.user, course=course).exists():
+        return redirect('students_dashboard')
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    payment_data = client.order.create({
+        "amount": int(course.price * 100),
+        "currency": "INR",
+        "payment_capture": "1"
+    })
+
+    # Save order to Payment model
+    Payment.objects.create(
+        user=request.user,
+        course=course,
+        order_id=payment_data['id'],
+        amount=course.price,
+        status='PENDING',
+    )
+
+    context = {
+        "course": course,
+        "order_id": payment_data['id'],
+        "amount": payment_data['amount'],
+        "razorpay_key": settings.RAZORPAY_KEY_ID,
+        "user": request.user
+    }
+    return render(request, "courses_app/payment.html", context)
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+from .models import Payment, Enrollment
+
+@csrf_exempt
+def payment_success(request):
+    if request.method == "POST":
+        course_id = request.POST.get("course_id")
+        course = get_object_or_404(Course, id=course_id)
+
+        # Razorpay returns payment_id and order_id
+        payment_id = request.POST.get("razorpay_payment_id")
+        order_id = request.POST.get("razorpay_order_id")
+
+        # Update payment record
+        payment = Payment.objects.filter(order_id=order_id).first()
+        if payment:
+            payment.payment_id = payment_id
+            payment.status = "SUCCESS"
+            payment.save()
+
+        # Enroll the student
+        Enrollment.objects.get_or_create(student=request.user, course=course)
+
+        return render(request, "courses_app/payment_success.html", {"course": course})
+
+    return redirect("index")
+

@@ -11,6 +11,15 @@ admin.site.register(Feedback)
 admin.site.register(Question)
 admin.site.register(StudentSubmission)
 
+# admin.py
+from django.contrib import admin
+from .models import Payment
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'course', 'amount', 'status', 'order_id', 'payment_id', 'created_at')
+    search_fields = ('user__username', 'course__title', 'order_id', 'payment_id')
+    list_filter = ('status', 'created_at')
 
 
 

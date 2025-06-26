@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'courses_app/layout.html' %}
+{% block navbar %}
+<div class="navbar-nav ms-auto p-4 p-lg-0">
+    <a href="{% url 'students_dashboard' %}" class="nav-item nav-link active">Home</a>      
+</div>
+
+<div class="dropdown">
+    <a href="#" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block dropdown-toggle" 
+       id="profileDropdown" data-bs-toggle="dropdown" data-bs-popper="none" aria-expanded="false">
+        <h5 class="mb-0">Hi!{{ user.username }}</h5>
+        <img class="border rounded-circle p-2 mx-auto mb-3" src="{{ user.get_profile_picture_url }}" style="width: 80px; height: 80px;">
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end mt-4" aria-labelledby="profileDropdown">
+        <li><a class="dropdown-item" href="{% url 'profile' %}">View Profile</a></li>
+        <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Edit Profile</a></li>
+        <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+</div>
+{% endblock %}
+{% block content %}
+
+<h2>Pay for {{ course.title }}</h2>
+
+<form action="{% url 'payment_success' %}" method="POST">
+  {% csrf_token %}
+  <script
+    src="https://checkout.razorpay.com/v1/checkout.js"
+    data-key="{{ razorpay_key }}"
+    data-amount="{{ amount }}"
+    data-currency="INR"
+    data-order_id="{{ order_id }}"
+    data-buttontext="Pay ₹{{ amount|floatformat:2 }}"
+    data-name="Online Learning Platform"
+    data-description="Payment for {{ course.title }}"
+    data-prefill.name="{{ user.username }}"
+    data-theme.color="#3399cc"
+  ></script>
+  <input type="hidden" name="course_id" value="{{ course.id }}">
+  
+</form>
+
+ {% endblock %}
+    
+{% block footer %}{% endblock %} 
+</html>
