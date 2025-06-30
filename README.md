@@ -44,7 +44,7 @@ Razorpay has been integrated to allow secure payments for courses. Currently, th
 
 ## 🖥️ Demo Video
 
-🎥 [LinkedIn Post with Demo](#) *(Add the link after posting your LinkedIn update)*
+🎥 [LinkedIn Post with Demo](#) *(https://www.linkedin.com/posts/jeena-v_django-razorpay-paymentgateway-activity-7343873528464601089-PJdE?utm_source=share&utm_medium=member_desktop&rcm=ACoAABfJWJ8BiXNGeGlXlNA1_pCDHLH6nntV-pY)*
 
 ---
 
@@ -52,9 +52,35 @@ Razorpay has been integrated to allow secure payments for courses. Currently, th
 
 > Add screenshots inside `/screenshots/` folder and link here:
 
-- 📘 Course Listing Page  
-- 💳 Razorpay Payment Popup  
-- ✅ Payment Success Confirmation
+- ### 📘 index Page
+![index page](Screenshot4.png) 
+
+- ### 📘 Course Listing Page
+![Course List](Screenshot3.png) 
+
+- ### 📘 Course Details Page
+![Course Details](Screenshot2.png) 
+
+- ### 📘 Instructor Page
+![Instructor Dashboard](Screenshot1.png) 
+
+- ### 📘 Students Page
+![Students Dashboard](Screenshot1.png) 
+
+- ### 📘 Course Material Page
+![Course Materials](Screenshot6.png) 
+
+- ### 📘 Course Assignment Page
+![Course Assignment](Screenshot7.png) 
+
+- ### 📘 Course Quiz Page
+![Course Quiz](Screenshot8.png) 
+
+- ### 💳 Razorpay Payment Popup  
+![Razorpay Payment ](Screenshot9.png) 
+
+- - ### ✅ Payment Success Confirmation
+![Razorpay Payment ](Screenshot11.png) 
 
 ---
 
