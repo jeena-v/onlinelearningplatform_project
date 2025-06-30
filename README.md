@@ -50,7 +50,6 @@ Razorpay has been integrated to allow secure payments for courses. Currently, th
 
 ## 📸 Screenshots
 
-> Add screenshots inside `/screenshots/` folder and link here:
 
 - ### 📘 index Page
 ![index page](Screenshot4.png) 
@@ -89,7 +88,7 @@ Razorpay has been integrated to allow secure payments for courses. Currently, th
 Clone the repository and run on your local machine:
 
 ```bash
-git clone https://github.com/yourusername/eLearning.git
+git clone https://github.com/jeena_v/eLearning.git
 cd eLearning
 pip install -r requirements.txt
 python manage.py migrate
